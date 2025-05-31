@@ -13,6 +13,7 @@ INCLUDEPATH += $$PWD/include
 
 
 SOURCES += \
+    src/controller/filters/filter.cpp \
     src/main.cpp \
     src/models/artwork.cpp \
     src/repository/repository.cpp \
@@ -56,6 +57,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 # Add JSON support
 QT += core
+
 
 
 

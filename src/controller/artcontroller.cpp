@@ -47,7 +47,16 @@ void ArtController::redo() {
 }
 
 void ArtController::addArtwork(const Artwork& artwork) {
-    auto command = std::make_shared<AddCommand>(m_repository, artwork);
+    // Create a copy of the artwork to modify
+    Artwork artworkToAdd = artwork;
+    
+    // Generate an ID if one doesn't exist
+    if (artworkToAdd.getId().isEmpty()) {
+        artworkToAdd.setId(generateArtworkId());
+    }
+    
+    // Create and execute the command
+    auto command = std::make_shared<AddCommand>(m_repository, artworkToAdd);
     executeCommand(command);
 }
 
