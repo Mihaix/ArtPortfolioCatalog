@@ -1,0 +1,37 @@
+# Qt Creator specific
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+Makefile*
+*build-*
+*.qm
+.qmake.stash
+
+# Qt general
+*.o
+*.obj
+*.debug
+*.release
+debug/
+release/
+.qmake.cache
+.qmake.stash
+
+# Compiler output
+*.exe
+*.dll
+*.lib
+*.a
+*.so
+*.dylib
+
+# Misc
+*.core
+*.autosave
+.qtc_clangd/
+*.swp
