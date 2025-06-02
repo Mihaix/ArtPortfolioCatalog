@@ -17,7 +17,6 @@ public:
 
     bool apply(const Artwork& artwork) const override;
 
-    // Add a filter to the composite
     void addFilter(std::shared_ptr<Filter> filter);
 
 private:

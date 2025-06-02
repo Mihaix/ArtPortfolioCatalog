@@ -137,5 +137,5 @@ void ArtworkList::onDoubleClicked(const QModelIndex& index) {
 }
 
 int ArtworkList::getIdColumn() const {
-    return 0; // ID is still at column 0
+    return 0;
 }

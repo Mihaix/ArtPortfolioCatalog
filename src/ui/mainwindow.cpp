@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QApplication>
 #include <QDir>
+#include <QGroupBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -22,6 +23,10 @@ MainWindow::MainWindow(QWidget *parent)
     , m_filterTextEdit(new QLineEdit(this))
     , m_filterTypeComboBox(new QComboBox(this))
     , m_applyFilterButton(new QPushButton("Apply Filter", this))
+    , m_useMultipleFilters(new QCheckBox("Use Multiple Filters", this))
+    , m_logicalOperator(new QComboBox(this))
+    , m_filterTextEdit2(new QLineEdit(this))
+    , m_filterTypeComboBox2(new QComboBox(this))
     , m_toolbar(new QToolBar(this))
     , m_statusBar(new QStatusBar(this)) {
 
@@ -101,7 +106,9 @@ void MainWindow::setupToolbar() {
 void MainWindow::setupListPage() {
     QVBoxLayout* mainLayout = new QVBoxLayout(m_listPage);
 
-    // Filter section
+    QGroupBox* filterGroupBox = new QGroupBox("Filter Options", m_listPage);
+    QVBoxLayout* filterGroupLayout = new QVBoxLayout(filterGroupBox);
+
     QHBoxLayout* filterLayout = new QHBoxLayout();
     filterLayout->addWidget(new QLabel("Filter:"));
 
@@ -110,10 +117,40 @@ void MainWindow::setupListPage() {
     filterLayout->addWidget(m_filterTypeComboBox);
 
     filterLayout->addWidget(m_filterTextEdit);
-    filterLayout->addWidget(m_applyFilterButton);
 
-    // Main content
-    mainLayout->addLayout(filterLayout);
+    QHBoxLayout* multipleFilterLayout = new QHBoxLayout();
+    multipleFilterLayout->addWidget(m_useMultipleFilters);
+
+    m_logicalOperator->addItem("AND", "AND");
+    m_logicalOperator->addItem("OR", "OR");
+    m_logicalOperator->setToolTip("Select how to combine multiple filters");
+    multipleFilterLayout->addWidget(new QLabel("Operator:"));
+    multipleFilterLayout->addWidget(m_logicalOperator);
+    multipleFilterLayout->addStretch();
+
+    QHBoxLayout* filter2Layout = new QHBoxLayout();
+    filter2Layout->addWidget(new QLabel("Filter 2:"));
+
+    m_filterTypeComboBox2->addItem("Title", "title");
+    m_filterTypeComboBox2->addItem("Artist", "artist");
+    filter2Layout->addWidget(m_filterTypeComboBox2);
+
+    filter2Layout->addWidget(m_filterTextEdit2);
+
+    m_logicalOperator->setVisible(false);
+    m_filterTypeComboBox2->setVisible(false);
+    m_filterTextEdit2->setVisible(false);
+
+    QHBoxLayout* applyLayout = new QHBoxLayout();
+    applyLayout->addStretch();
+    applyLayout->addWidget(m_applyFilterButton);
+
+    filterGroupLayout->addLayout(filterLayout);
+    filterGroupLayout->addLayout(multipleFilterLayout);
+    filterGroupLayout->addLayout(filter2Layout);
+    filterGroupLayout->addLayout(applyLayout);
+
+    mainLayout->addWidget(filterGroupBox);
     mainLayout->addWidget(m_artworkList);
 }
 
@@ -141,9 +178,19 @@ void MainWindow::setupConnections() {
 
     connect(m_applyFilterButton, &QPushButton::clicked, this, &MainWindow::onApplyFilter);
     connect(m_filterTextEdit, &QLineEdit::returnPressed, this, &MainWindow::onApplyFilter);
+    connect(m_filterTextEdit2, &QLineEdit::returnPressed, this, &MainWindow::onApplyFilter);
+
+    connect(m_useMultipleFilters, &QCheckBox::stateChanged, this, &MainWindow::onUseMultipleFiltersChanged);
 
     connect(m_controller.get(), &ArtController::artworksChanged, this, &MainWindow::onArtworksChanged);
     connect(m_controller.get(), &ArtController::undoRedoStateChanged, this, &MainWindow::onUndoRedoStateChanged);
+}
+
+void MainWindow::onUseMultipleFiltersChanged(int state) {
+    bool useMultiple = (state == Qt::Checked);
+    m_logicalOperator->setVisible(useMultiple);
+    m_filterTypeComboBox2->setVisible(useMultiple);
+    m_filterTextEdit2->setVisible(useMultiple);
 }
 
 void MainWindow::showListPage() {
@@ -237,23 +284,54 @@ void MainWindow::onRedo() {
 }
 
 void MainWindow::onApplyFilter() {
-    QString filterText = m_filterTextEdit->text().trimmed();
-    QString filterType = m_filterTypeComboBox->currentData().toString();
+    QString filterText1 = m_filterTextEdit->text().trimmed();
+    QString filterType1 = m_filterTypeComboBox->currentData().toString();
 
-    std::shared_ptr<Filter> filter;
+    if (m_useMultipleFilters->isChecked()) {
+        QString filterText2 = m_filterTextEdit2->text().trimmed();
+        QString filterType2 = m_filterTypeComboBox2->currentData().toString();
+        bool isAndOperator = (m_logicalOperator->currentData().toString() == "AND");
 
-    if (filterText.isEmpty()) {
-        loadArtworks();
-        return;
+        if (filterText1.isEmpty() && filterText2.isEmpty()) {
+            loadArtworks();
+            return;
+        }
+
+        auto compositeFilter = std::make_shared<CompositeFilter>(
+            isAndOperator ? CompositeFilter::AND : CompositeFilter::OR);
+
+        if (!filterText1.isEmpty()) {
+            if (filterType1 == "title") {
+                compositeFilter->addFilter(std::make_shared<TitleFilter>(filterText1));
+            } else {
+                compositeFilter->addFilter(std::make_shared<ArtistFilter>(filterText1));
+            }
+        }
+        if (!filterText2.isEmpty()) {
+            if (filterType2 == "title") {
+                compositeFilter->addFilter(std::make_shared<TitleFilter>(filterText2));
+            } else {
+                compositeFilter->addFilter(std::make_shared<ArtistFilter>(filterText2));
+            }
+        }
+
+        QVector<Artwork> filteredArtworks = m_controller->filterArtworks(compositeFilter);
+        m_artworkList->setArtworks(filteredArtworks);
+        m_statusBar->showMessage(QString("Found %1 artwork(s)").arg(filteredArtworks.size()), 3000);
     }
+    else {
+        if (filterText1.isEmpty()) {
+            loadArtworks();
+            return;
+        }
 
-    if (filterType == "title") {
-        filter = std::make_shared<TitleFilter>(filterText);
-    } else if (filterType == "artist") {
-        filter = std::make_shared<ArtistFilter>(filterText);
-    }
+        std::shared_ptr<Filter> filter;
+        if (filterType1 == "title") {
+            filter = std::make_shared<TitleFilter>(filterText1);
+        } else {
+            filter = std::make_shared<ArtistFilter>(filterText1);
+        }
 
-    if (filter) {
         QVector<Artwork> filteredArtworks = m_controller->filterArtworks(filter);
         m_artworkList->setArtworks(filteredArtworks);
         m_statusBar->showMessage(QString("Found %1 artwork(s)").arg(filteredArtworks.size()), 3000);

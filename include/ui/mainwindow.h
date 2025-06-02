@@ -12,6 +12,7 @@
 #include <QToolBar>
 #include <QStatusBar>
 #include <QAction>
+#include <QCheckBox>
 #include <memory>
 
 class MainWindow : public QMainWindow {
@@ -35,6 +36,7 @@ private slots:
     void onRedo();
 
     void onApplyFilter();
+    void onUseMultipleFiltersChanged(int state);
 
     void onArtworksChanged();
     void onUndoRedoStateChanged();
@@ -50,6 +52,10 @@ private:
     QLineEdit* m_filterTextEdit;
     QComboBox* m_filterTypeComboBox;
     QPushButton* m_applyFilterButton;
+    QCheckBox* m_useMultipleFilters;
+    QComboBox* m_logicalOperator;
+    QLineEdit* m_filterTextEdit2;
+    QComboBox* m_filterTypeComboBox2;
 
     QToolBar* m_toolbar;
     QStatusBar* m_statusBar;
