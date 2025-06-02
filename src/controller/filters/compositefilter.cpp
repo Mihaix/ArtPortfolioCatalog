@@ -6,11 +6,10 @@ CompositeFilter::CompositeFilter(LogicalOperator op)
 
 bool CompositeFilter::apply(const Artwork& artwork) const {
     if (m_filters.isEmpty()) {
-        return true; // No filters means no restrictions
+        return true;
     }
 
     if (m_operator == AND) {
-        // All filters must match (AND logic)
         for (const auto& filter : m_filters) {
             if (!filter->apply(artwork)) {
                 return false;
@@ -18,7 +17,6 @@ bool CompositeFilter::apply(const Artwork& artwork) const {
         }
         return true;
     } else {
-        // At least one filter must match (OR logic)
         for (const auto& filter : m_filters) {
             if (filter->apply(artwork)) {
                 return true;

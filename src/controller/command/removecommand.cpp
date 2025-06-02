@@ -3,7 +3,6 @@
 RemoveCommand::RemoveCommand(std::shared_ptr<Repository> repository, const QString& artworkId)
     : m_repository(repository), m_artworkId(artworkId), m_executed(false) {
 
-    // Store the artwork before removal for undo operation
     if (m_repository->exists(artworkId)) {
         m_removedArtwork = m_repository->getById(artworkId);
     }

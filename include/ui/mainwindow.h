@@ -22,12 +22,10 @@ public:
     ~MainWindow();
 
 private slots:
-    // UI navigation
     void showListPage();
     void showAddPage();
     void showEditPage(const QString& id);
 
-    // Actions
     void onAddArtwork();
     void onEditArtwork();
     void onRemoveArtwork();
@@ -36,15 +34,12 @@ private slots:
     void onUndo();
     void onRedo();
 
-    // Filtering
     void onApplyFilter();
 
-    // Updates from controller
     void onArtworksChanged();
     void onUndoRedoStateChanged();
 
 private:
-    // UI Components
     QStackedWidget* m_stackedWidget;
     QWidget* m_listPage;
     QWidget* m_formPage;
@@ -59,18 +54,15 @@ private:
     QToolBar* m_toolbar;
     QStatusBar* m_statusBar;
 
-    // Actions
     QAction* m_addAction;
     QAction* m_editAction;
     QAction* m_removeAction;
     QAction* m_undoAction;
     QAction* m_redoAction;
 
-    // Controller
     std::shared_ptr<ArtController> m_controller;
     std::shared_ptr<Repository> m_repository;
 
-    // UI Setup methods
     void setupRepository();
     void setupController();
     void setupUI();
@@ -80,7 +72,6 @@ private:
     void setupFormPage();
     void setupConnections();
 
-    // Helper methods
     void loadArtworks();
     void updateUndoRedoActions();
 };

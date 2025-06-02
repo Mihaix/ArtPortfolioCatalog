@@ -20,14 +20,11 @@ ArtworkForm::ArtworkForm(QWidget* parent)
 void ArtworkForm::setupUI() {
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
 
-    // Create the form layout
     QFormLayout* formLayout = new QFormLayout();
 
-    // Configure the date edit
     m_dateEdit->setCalendarPopup(true);
     m_dateEdit->setDate(QDate::currentDate());
 
-    // Add fields to the form
     formLayout->addRow("Title:", m_titleEdit);
     formLayout->addRow("Artist:", m_artistEdit);
     formLayout->addRow("Medium:", m_mediumEdit);
@@ -35,7 +32,6 @@ void ArtworkForm::setupUI() {
     formLayout->addRow("Description:", m_descriptionEdit);
     formLayout->addRow("Image URL:", m_imageUrlEdit);
 
-    // Add form and buttons to the main layout
     mainLayout->addLayout(formLayout);
     mainLayout->addWidget(m_buttonBox);
 

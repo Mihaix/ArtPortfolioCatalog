@@ -11,7 +11,6 @@ public:
             const QString& medium, const QDate& creationDate,
             const QString& description, const QString& imageUrl);
 
-    // Getters
     QString getId() const;
     QString getTitle() const;
     QString getArtist() const;
@@ -20,7 +19,6 @@ public:
     QString getDescription() const;
     QString getImageUrl() const;
 
-    // Setters
     void setId(const QString& id);
     void setTitle(const QString& title);
     void setArtist(const QString& artist);
@@ -29,7 +27,6 @@ public:
     void setDescription(const QString& description);
     void setImageUrl(const QString& imageUrl);
 
-    // For comparison
     bool operator==(const Artwork& other) const;
     bool operator!=(const Artwork& other) const;
 

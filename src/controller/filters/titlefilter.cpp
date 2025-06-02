@@ -5,6 +5,5 @@ TitleFilter::TitleFilter(const QString& titlePattern)
 }
 
 bool TitleFilter::apply(const Artwork& artwork) const {
-    return artwork.getTitle().contains(m_titlePattern,
-                                       m_caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+    return artwork.getTitle().contains(m_titlePattern, m_caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
 }

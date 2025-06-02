@@ -99,10 +99,8 @@ bool CSVRepository::save() {
 
     QTextStream out(&file);
 
-    // Write header
     out << "ID,Title,Artist,Medium,CreationDate,Description,ImageURL\n";
 
-    // Write data
     for (const Artwork& artwork : m_artworks) {
         QStringList fields = artworkToStringList(artwork);
         out << fields.join(",") << "\n";

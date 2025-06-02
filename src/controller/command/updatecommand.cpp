@@ -3,7 +3,6 @@
 UpdateCommand::UpdateCommand(std::shared_ptr<Repository> repository, const Artwork& newArtwork)
     : m_repository(repository), m_newArtwork(newArtwork), m_executed(false) {
 
-    // Store the old artwork state for undo operation
     if (m_repository->exists(newArtwork.getId())) {
         m_oldArtwork = m_repository->getById(newArtwork.getId());
     }

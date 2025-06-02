@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     int testResult = testProcess.exitCode();
     if (testResult != 0) {
         qCritical() << "Tests failed with code:" << testResult;
-        // return testResult;
+        return testResult;
     } else {
         qDebug() << "All tests passed!";
     }

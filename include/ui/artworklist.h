@@ -1,12 +1,14 @@
 #ifndef ARTWORKLIST_H
 #define ARTWORKLIST_H
 
-#include "models/artwork.h"
 #include <QWidget>
 #include <QTableView>
 #include <QStandardItemModel>
+#include <QItemSelection>
 #include <QVector>
-#include <QItemSelectionModel>
+#include "models/artwork.h"
+
+class QNetworkAccessManager;
 
 class ArtworkList : public QWidget {
     Q_OBJECT
@@ -20,21 +22,23 @@ public:
     void clearSelection();
 
 signals:
-    void artworkSelected(const QString& id);
-    void artworkDoubleClicked(const QString& id);
+    void artworkSelected(const QString& artworkId);
+    void artworkDoubleClicked(const QString& artworkId);
 
 private slots:
     void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
     void onDoubleClicked(const QModelIndex& index);
 
 private:
+    void setupUI();
+    void setupConnections();
+    void loadImageForRow(QStandardItem* item, const QString& url, int row);
+    int getIdColumn() const;
+
     QTableView* m_tableView;
     QStandardItemModel* m_model;
     QVector<Artwork> m_artworks;
-
-    void setupUI();
-    void setupConnections();
-    int getIdColumn() const { return 0; }
+    QNetworkAccessManager* m_networkManager;
 };
 
 #endif // ARTWORKLIST_H

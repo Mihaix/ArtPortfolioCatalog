@@ -5,6 +5,5 @@ ArtistFilter::ArtistFilter(const QString& artistPattern)
 }
 
 bool ArtistFilter::apply(const Artwork& artwork) const {
-    return artwork.getArtist().contains(m_artistPattern,
-                                        m_caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+    return artwork.getArtist().contains(m_artistPattern, m_caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
 }

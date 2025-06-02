@@ -34,28 +34,24 @@ MainWindow::MainWindow(QWidget *parent)
     setupFormPage();
     setupConnections();
 
-    // Initial UI state
     showListPage();
     loadArtworks();
     updateUndoRedoActions();
 
-    // Set window properties
     setWindowTitle("Art Portfolio Catalog");
     setMinimumSize(800, 600);
 }
 
 MainWindow::~MainWindow() {
-    // Qt will handle deleting UI components
+
 }
 
 void MainWindow::setupRepository() {
-    // Create the data directory if it doesn't exist
     QDir dataDir(QApplication::applicationDirPath() + "/data");
     if (!dataDir.exists()) {
         dataDir.mkpath(".");
     }
 
-    // Use JSON repository
     QString filePath = dataDir.absolutePath() + "/artworks.json";
     m_repository = std::make_shared<JSONRepository>(filePath);
 }
@@ -86,7 +82,6 @@ void MainWindow::setupActions() {
     m_undoAction->setShortcut(QKeySequence::Undo);
     m_redoAction->setShortcut(QKeySequence::Redo);
 
-    // Initial state
     m_editAction->setEnabled(false);
     m_removeAction->setEnabled(false);
     m_undoAction->setEnabled(false);
@@ -128,14 +123,12 @@ void MainWindow::setupFormPage() {
 }
 
 void MainWindow::setupConnections() {
-    // Connect actions to slots
     connect(m_addAction, &QAction::triggered, this, &MainWindow::showAddPage);
     connect(m_editAction, &QAction::triggered, this, &MainWindow::onEditArtwork);
     connect(m_removeAction, &QAction::triggered, this, &MainWindow::onRemoveArtwork);
     connect(m_undoAction, &QAction::triggered, this, &MainWindow::onUndo);
     connect(m_redoAction, &QAction::triggered, this, &MainWindow::onRedo);
 
-    // Connect ArtworkList signals
     connect(m_artworkList, &ArtworkList::artworkSelected, [this](const QString& id) {
         m_editAction->setEnabled(true);
         m_removeAction->setEnabled(true);
@@ -143,15 +136,12 @@ void MainWindow::setupConnections() {
 
     connect(m_artworkList, &ArtworkList::artworkDoubleClicked, this, &MainWindow::showEditPage);
 
-    // Connect ArtworkForm signals
     connect(m_artworkForm, &ArtworkForm::saveClicked, this, &MainWindow::onSaveArtwork);
     connect(m_artworkForm, &ArtworkForm::cancelClicked, this, &MainWindow::onCancelForm);
 
-    // Connect filter controls
     connect(m_applyFilterButton, &QPushButton::clicked, this, &MainWindow::onApplyFilter);
     connect(m_filterTextEdit, &QLineEdit::returnPressed, this, &MainWindow::onApplyFilter);
 
-    // Connect controller signals
     connect(m_controller.get(), &ArtController::artworksChanged, this, &MainWindow::onArtworksChanged);
     connect(m_controller.get(), &ArtController::undoRedoStateChanged, this, &MainWindow::onUndoRedoStateChanged);
 }
@@ -209,13 +199,11 @@ void MainWindow::onRemoveArtwork() {
 void MainWindow::onSaveArtwork(const Artwork& artwork) {
     try {
         if (artwork.getId().isEmpty()) {
-            // This is a new artwork
             Artwork newArtwork = artwork;
             newArtwork.setId(m_controller->generateArtworkId());
             m_controller->addArtwork(newArtwork);
             m_statusBar->showMessage("Artwork added successfully", 3000);
         } else {
-            // This is an update
             m_controller->updateArtwork(artwork);
             m_statusBar->showMessage("Artwork updated successfully", 3000);
         }
@@ -255,7 +243,6 @@ void MainWindow::onApplyFilter() {
     std::shared_ptr<Filter> filter;
 
     if (filterText.isEmpty()) {
-        // No filter text, show all
         loadArtworks();
         return;
     }

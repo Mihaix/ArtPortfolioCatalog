@@ -16,32 +16,26 @@ class ArtController : public QObject {
 public:
     explicit ArtController(std::shared_ptr<Repository> repository, QObject* parent = nullptr);
 
-    // Command execution with undo/redo support
     void executeCommand(std::shared_ptr<Command> command);
     bool canUndo() const;
     bool canRedo() const;
     void undo();
     void redo();
 
-    // Convenience methods that create and execute commands
     void addArtwork(const Artwork& artwork);
     void updateArtwork(const Artwork& artwork);
     void removeArtwork(const QString& id);
 
-    // Repository access
     QVector<Artwork> getAllArtworks() const;
     Artwork getArtworkById(const QString& id) const;
     bool artworkExists(const QString& id) const;
 
-    // Filtering
     QVector<Artwork> filterArtworks(std::shared_ptr<Filter> filter) const;
 
-    // Repository operations
     QString generateArtworkId() const;
 
 
 signals:
-    // Signals for UI updates
     void artworksChanged();
     void undoRedoStateChanged();
 
